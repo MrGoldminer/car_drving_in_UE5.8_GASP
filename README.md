@@ -27,9 +27,11 @@
 
 ```
 Source/GameAnimationSample/
-├── Character/    人物玩法：抓钩、载具交互、GameplaySubsystem（组件接入层）
+├── Character/    人物玩法：抓钩、载具交互、血量、演示敌人、GameplaySubsystem（组件接入层）
 ├── Vehicles/     载具系统：碰碰车物理基类、Buggy、自动泊车、泥地赛道
 ├── Weapons/      武器库：太刀 / 唐刀（近战）、AK47（射击 + 弹道轨迹）
+├── UI/           Slate HUD：敌人血条（顶端）、玩家血条（底部）
+├── Tests/        自动化测试（Automation RunTests GameAnimationSample）
 └── GameAnimationSample.Build.cs
 ```
 
@@ -38,6 +40,13 @@ Source/GameAnimationSample/
 - [Weapons — 武器库](Source/GameAnimationSample/Weapons/README.md)
 - [Vehicles — 载具系统](Source/GameAnimationSample/Vehicles/README.md)
 - [Character — 人物玩法](Source/GameAnimationSample/Character/README.md)
+- [UI — 血条 HUD](Source/GameAnimationSample/UI/README.md)
+- [Tests — 自动化测试](Source/GameAnimationSample/Tests/README.md)
+
+## 血量与 HUD
+
+- 玩家血量在**屏幕底部**（绿/黄/红渐变 + 数值），敌人血量在**屏幕顶端**（准星指向显示，丢失目标保留 3 秒）。
+- 开局在人物前方生成 2 个演示敌人（几何体小人），可用太刀/唐刀/AK47 攻击扣血，打死后隐藏。
 
 ### 集成方式
 

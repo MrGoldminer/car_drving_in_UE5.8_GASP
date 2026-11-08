@@ -3,7 +3,10 @@
 #if WITH_DEV_AUTOMATION_TESTS
 
 #include "Components/CapsuleComponent.h"
+#include "Engine/DamageEvents.h"
 #include "Engine/Engine.h"
+#include "GameAnimationSample/Character/EnemyTarget.h"
+#include "GameAnimationSample/Character/HealthComponent.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/World.h"
 #include "GameAnimationSample/Character/VehicleInteractionComponent.h"
@@ -13,7 +16,9 @@
 #include "GameAnimationSample/Weapons/RifleWeapon.h"
 #include "GameAnimationSample/Weapons/WeaponManagerComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 namespace GameplayTestHelpers
 {
@@ -265,6 +270,41 @@ bool FMeleeDamageTest::RunTest(const FString& Parameters)
 
 	TestTrue(TEXT("Target took melee damage"), Target->AccumulatedDamage > 0.0f);
 	TestEqual(TEXT("Single swing hits once"), Target->AccumulatedDamage, Katana->Damage);
+
+	GameplayTestHelpers::DestroyTestWorld(World);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FHealthDamageTest,
+	"GameAnimationSample.Combat.HealthDamageAndDeath",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FHealthDamageTest::RunTest(const FString& Parameters)
+{
+	UWorld* World = GameplayTestHelpers::CreateTestWorld();
+	if (!World)
+	{
+		AddError(TEXT("Failed to create test world"));
+		return false;
+	}
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AEnemyTarget* Enemy = World->SpawnActor<AEnemyTarget>(FVector(500.0f, 0.0f, 100.0f), FRotator::ZeroRotator, Params);
+	Enemy->DispatchBeginPlay();
+
+	TestEqual(TEXT("Starts at full health"), Enemy->Health->CurrentHealth, 100.0f);
+
+	Enemy->OnTakeAnyDamage.Broadcast(Enemy, 40.0f, GetDefault<UDamageType>(), nullptr, nullptr);
+	TestEqual(TEXT("Damage reduces health"), Enemy->Health->CurrentHealth, 60.0f);
+	TestFalse(TEXT("Still alive"), Enemy->Health->IsDead());
+
+	Enemy->OnTakeAnyDamage.Broadcast(Enemy, 80.0f, GetDefault<UDamageType>(), nullptr, nullptr);
+	TestEqual(TEXT("Health clamped at zero"), Enemy->Health->CurrentHealth, 0.0f);
+	TestTrue(TEXT("Dead after lethal damage"), Enemy->Health->IsDead());
+	TestTrue(TEXT("Dead enemy hidden"), Enemy->IsHidden());
+	TestFalse(TEXT("Dead enemy collision off"), Enemy->GetActorEnableCollision());
 
 	GameplayTestHelpers::DestroyTestWorld(World);
 	return true;

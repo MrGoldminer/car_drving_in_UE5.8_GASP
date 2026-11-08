@@ -11,6 +11,7 @@
 | `GameAnimationSample.Weapons.TabCyclesAllWeapons` | Tab 按 徒手→太刀→唐刀→AK47→徒手 循环，装备武器可见并挂到人物 |
 | `GameAnimationSample.Weapons.AK47ShotDamagesTarget` | AK47 开火对前方目标造成伤害（射线命中 + ApplyDamage） |
 | `GameAnimationSample.Weapons.KatanaSwingDamagesTargetOnce` | 太刀一次挥砍对目标造成且仅造成一次伤害 |
+| `GameAnimationSample.Combat.HealthDamageAndDeath` | `UHealthComponent` 扣血、归零致死、`EnemyTarget` 死亡后隐藏并关闭碰撞 |
 
 `ATestDamageReceiver`：记录累计伤害的测试目标，用于验证近战/射击命中。
 

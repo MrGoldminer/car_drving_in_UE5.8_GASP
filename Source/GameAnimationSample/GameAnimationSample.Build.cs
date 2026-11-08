@@ -15,7 +15,10 @@ public class GameAnimationSample : ModuleRules
 				"InputCore",
 				"PhysicsCore",
 				"Mover",
-				"MoverExamples"
+				"MoverExamples",
+				"UMG",
+				"Slate",
+				"SlateCore"
 			});
 	}
 }

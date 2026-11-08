@@ -1,8 +1,11 @@
 #include "GameAnimationSample/Character/GameplaySubsystem.h"
 
 #include "EngineUtils.h"
+#include "GameAnimationSample/Character/EnemyTarget.h"
 #include "GameAnimationSample/Character/GrapplingHookComponent.h"
+#include "GameAnimationSample/Character/HealthComponent.h"
 #include "GameAnimationSample/Character/VehicleInteractionComponent.h"
+#include "GameAnimationSample/UI/GameplayHUDWidget.h"
 #include "GameAnimationSample/Vehicles/BuggyPawn.h"
 #include "GameAnimationSample/Vehicles/BumperCarPawn.h"
 #include "GameAnimationSample/Weapons/WeaponManagerComponent.h"
@@ -63,6 +66,49 @@ void UGameplaySubsystem::Tick(float DeltaTime)
 			UWeaponManagerComponent* Weapons = NewObject<UWeaponManagerComponent>(Pawn, TEXT("WeaponManager"));
 			Weapons->RegisterComponent();
 		}
+		if (!Pawn->FindComponentByClass<UHealthComponent>())
+		{
+			UHealthComponent* Health = NewObject<UHealthComponent>(Pawn, TEXT("Health"));
+			Health->RegisterComponent();
+		}
+
+		if (Controller->IsLocalPlayerController() && !HudWidget)
+		{
+			HudWidget = CreateWidget<UGameplayHUDWidget>(Controller);
+			if (HudWidget)
+			{
+				HudWidget->AddToViewport();
+			}
+		}
+
+		SpawnDemoEnemies(Pawn);
+	}
+}
+
+void UGameplaySubsystem::SpawnDemoEnemies(APawn* PlayerPawn)
+{
+	if (bSpawnedDemoEnemies || !PlayerPawn)
+	{
+		return;
+	}
+	bSpawnedDemoEnemies = true;
+
+	UWorld* World = GetWorld();
+	for (TActorIterator<AEnemyTarget> Iterator(World); Iterator; ++Iterator)
+	{
+		return;
+	}
+
+	const FVector Forward = PlayerPawn->GetActorForwardVector();
+	const FVector Right = PlayerPawn->GetActorRightVector();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	for (int32 Index = 0; Index < 2; ++Index)
+	{
+		const FVector Location = PlayerPawn->GetActorLocation()
+			+ Forward * (500.0f + Index * 250.0f)
+			+ Right * (Index == 0 ? -150.0f : 150.0f);
+		World->SpawnActor<AEnemyTarget>(Location, FRotator::ZeroRotator, SpawnParams);
 	}
 }
 
@@ -73,7 +119,7 @@ void UGameplaySubsystem::ReturnControlToCharacter(APlayerController* Controller,
 	for (TActorIterator<ACharacter> Iterator(World); Iterator; ++Iterator)
 	{
 		APawn* Candidate = *Iterator;
-		if (Candidate != Buggy && !Candidate->IsA<ABumperCarPawn>())
+		if (Candidate != Buggy && !Candidate->IsA<ABumperCarPawn>() && !Candidate->IsA<AEnemyTarget>())
 		{
 			CharacterPawn = Candidate;
 			break;

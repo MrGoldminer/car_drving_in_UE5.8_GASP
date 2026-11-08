@@ -16,6 +16,11 @@ public:
 
 private:
 	float TimeUntilNextCheck = 0.0f;
+	bool bSpawnedDemoEnemies = false;
+
+	UPROPERTY()
+	TObjectPtr<class UGameplayHUDWidget> HudWidget;
 
 	void ReturnControlToCharacter(APlayerController* Controller, class ABuggyPawn* Buggy);
+	void SpawnDemoEnemies(APawn* PlayerPawn);
 };
