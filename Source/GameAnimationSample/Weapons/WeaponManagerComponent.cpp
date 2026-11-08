@@ -2,10 +2,15 @@
 
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Engine/LocalPlayer.h"
 #include "GameAnimationSample/Weapons/MeleeWeapon.h"
 #include "GameAnimationSample/Weapons/RifleWeapon.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
 
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
@@ -55,9 +60,36 @@ void UWeaponManagerComponent::TickComponent(
 
 void UWeaponManagerComponent::BindInput(UInputComponent* InputComponent)
 {
+	DisableNextPawnTabMapping();
 	InputComponent->BindAction(TEXT("WeaponCycle"), IE_Pressed, this, &UWeaponManagerComponent::CycleWeapon);
 	InputComponent->BindAction(TEXT("WeaponAttack"), IE_Pressed, this, &UWeaponManagerComponent::StartAttackInput);
 	InputComponent->BindAction(TEXT("WeaponAttack"), IE_Released, this, &UWeaponManagerComponent::StopAttackInput);
+}
+
+void UWeaponManagerComponent::DisableNextPawnTabMapping()
+{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	APlayerController* Controller = OwnerPawn ? Cast<APlayerController>(OwnerPawn->GetController()) : nullptr;
+	if (!Controller)
+	{
+		return;
+	}
+
+	UInputMappingContext* Sandbox = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Input/IMC_Sandbox.IMC_Sandbox"));
+	UInputAction* NextPawn = LoadObject<UInputAction>(nullptr, TEXT("/Game/Input/IA_NextPawn.IA_NextPawn"));
+	if (!Sandbox || !NextPawn)
+	{
+		return;
+	}
+
+	Sandbox->UnmapKey(NextPawn, EKeys::Tab);
+	if (ULocalPlayer* LocalPlayer = Controller->GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			Subsystem->RequestRebuildControlMappings();
+		}
+	}
 }
 
 AWeaponBase* UWeaponManagerComponent::FindWeapon(EWeaponType Type) const

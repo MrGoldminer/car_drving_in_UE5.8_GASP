@@ -19,6 +19,7 @@ public:
 private:
 	TSharedPtr<SProgressBar> PlayerBar;
 	TSharedPtr<STextBlock> PlayerText;
+	TSharedPtr<STextBlock> WeaponText;
 	TSharedPtr<SBox> EnemyContainer;
 	TSharedPtr<SProgressBar> EnemyBar;
 	TSharedPtr<STextBlock> EnemyText;

@@ -48,6 +48,7 @@ private:
 	bool bInputBound = false;
 
 	void BindInput(UInputComponent* InputComponent);
+	void DisableNextPawnTabMapping();
 	void StartAttackInput();
 	void StopAttackInput();
 	AWeaponBase* FindWeapon(EWeaponType Type) const;

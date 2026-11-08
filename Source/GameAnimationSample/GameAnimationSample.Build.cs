@@ -18,7 +18,8 @@ public class GameAnimationSample : ModuleRules
 				"MoverExamples",
 				"UMG",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"EnhancedInput"
 			});
 	}
 }

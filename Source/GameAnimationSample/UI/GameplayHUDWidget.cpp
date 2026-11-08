@@ -4,6 +4,7 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/World.h"
 #include "GameAnimationSample/Character/HealthComponent.h"
+#include "GameAnimationSample/Weapons/WeaponManagerComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Widgets/Layout/SBox.h"
@@ -20,6 +21,15 @@ TSharedRef<SWidget> UGameplayHUDWidget::RebuildWidget()
 	EnemyText = SNew(STextBlock).Justification(ETextJustify::Center).ColorAndOpacity(FLinearColor::White);
 
 	return SNew(SOverlay)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Bottom)
+		.Padding(FMargin(0.0f, 0.0f, 0.0f, 68.0f))
+		[
+			SAssignNew(WeaponText, STextBlock)
+			.Justification(ETextJustify::Center)
+			.ColorAndOpacity(FLinearColor(0.85f, 0.85f, 0.85f))
+		]
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Center)
 		.VAlign(VAlign_Bottom)
@@ -69,6 +79,32 @@ void UGameplayHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 void UGameplayHUDWidget::UpdatePlayerHealth()
 {
 	APawn* Pawn = GetOwningPlayerPawn();
+	if (Pawn)
+	{
+		if (UWeaponManagerComponent* Weapons = Pawn->FindComponentByClass<UWeaponManagerComponent>())
+		{
+			const TCHAR* WeaponName = TEXT("徒手");
+			switch (Weapons->GetCurrentWeaponType())
+			{
+			case EWeaponType::Katana:
+				WeaponName = TEXT("太刀");
+				break;
+			case EWeaponType::TangDao:
+				WeaponName = TEXT("唐刀");
+				break;
+			case EWeaponType::AK47:
+				WeaponName = TEXT("AK47");
+				break;
+			default:
+				break;
+			}
+			WeaponText->SetText(FText::FromString(FString::Printf(TEXT("%s   [Tab 切换 / 左键攻击]"), WeaponName)));
+		}
+		else
+		{
+			WeaponText->SetText(FText::GetEmpty());
+		}
+	}
 	UHealthComponent* Health = Pawn ? Pawn->FindComponentByClass<UHealthComponent>() : nullptr;
 	if (!Health)
 	{
