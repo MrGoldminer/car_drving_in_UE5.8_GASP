@@ -35,7 +35,35 @@ void AWeaponBase::RebuildModel()
 		}
 	}
 	ModelParts.Reset();
+	if (TryBuildFromAsset())
+	{
+		return;
+	}
 	BuildModel();
+}
+
+bool AWeaponBase::TryBuildFromAsset()
+{
+	if (ModelAsset.IsNull())
+	{
+		return false;
+	}
+
+	UStaticMesh* Mesh = LoadObject<UStaticMesh>(nullptr, *ModelAsset.ToString());
+	if (!Mesh)
+	{
+		return false;
+	}
+
+	UStaticMeshComponent* ModelPart = NewObject<UStaticMeshComponent>(this, TEXT("ImportedModel"));
+	ModelPart->SetStaticMesh(Mesh);
+	ModelPart->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ModelPart->RegisterComponent();
+	ModelPart->AttachToComponent(WeaponRoot, FAttachmentTransformRules::KeepRelativeTransform);
+	ModelPart->SetRelativeScale3D(ModelScale);
+	ModelPart->SetRelativeRotation(ModelRotation);
+	ModelParts.Add(ModelPart);
+	return true;
 }
 
 void AWeaponBase::Tick(float DeltaSeconds)

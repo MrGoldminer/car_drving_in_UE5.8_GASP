@@ -6,6 +6,8 @@
 #include "WeaponManagerComponent.generated.h"
 
 class AWeaponBase;
+class AMeleeWeapon;
+class ARifleWeapon;
 class UInputComponent;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -36,13 +38,13 @@ public:
 
 private:
 	UPROPERTY()
-	TObjectPtr<AWeaponBase> Katana;
+	TObjectPtr<AMeleeWeapon> Katana;
 
 	UPROPERTY()
-	TObjectPtr<AWeaponBase> TangDao;
+	TObjectPtr<AMeleeWeapon> TangDao;
 
 	UPROPERTY()
-	TObjectPtr<AWeaponBase> Rifle;
+	TObjectPtr<ARifleWeapon> Rifle;
 
 	EWeaponType CurrentType = EWeaponType::None;
 	bool bInputBound = false;

@@ -47,8 +47,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	FRotator GripRotation = FRotator::ZeroRotator;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon|Model")
+	FSoftObjectPath ModelAsset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon|Model")
+	FVector ModelScale = FVector(1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon|Model")
+	FRotator ModelRotation = FRotator::ZeroRotator;
+
 protected:
 	virtual void BuildModel() {}
+
+	bool TryBuildFromAsset();
 
 	UStaticMeshComponent* AddBoxPart(FName Name, FVector Location, FRotator Rotation, FVector Size);
 	UStaticMeshComponent* AddCylinderPart(FName Name, FVector Location, FRotator Rotation, FVector Size);

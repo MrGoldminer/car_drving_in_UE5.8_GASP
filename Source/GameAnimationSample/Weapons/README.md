@@ -26,6 +26,20 @@
 - 近战：`Damage=35`、`Reach=220cm`、`SwingDuration=0.4s`、`AttackCooldown=0.5s`
 - AK47：`Damage=25`、`RoundsPerMinute=600`、`Range=10000cm`、`TracerLifetime=0.06s`
 
+## 正式模型与材质
+
+三把武器已接入带贴图/PBR 材质的正式模型（`Content/Weapons/Models/<名称>/StaticMeshes/`），由 `WeaponManagerComponent` 设置 `ModelAsset / ModelScale / ModelRotation`，加载失败时回退几何拼装。
+
+| 武器 | 模型来源 | 材质 |
+| --- | --- | --- |
+| 太刀 | [Poly Pizza](https://poly.pizza/m/zV3WXbyjMf) | `lambert1` + 贴图，金属度 0.85 / 粗糙度 0.3 |
+| 唐刀 | [Poly Pizza](https://poly.pizza/m/9lLmH8Et4K) | Steel 系金属 0.8~0.85，Wood 粗糙度 0.6~0.65 |
+| AK47 | [Quaternius / Poly Pizza](https://poly.pizza/m/em1Hi9GuCv) | Grey 系金属 0.75~0.8，Wood 粗糙度 0.6 |
+
+许可以各模型页面为准（Quaternius 为 CC0，Google Poly 存档通常为 CC-BY，建议保留署名）。导入/校准脚本在 `RawAssets/Weapons/`（`import_weapons.py`、`inspect_weapons.py`、`enhance_materials.py`）。
+
+光影：模型使用 PBR 材质，配合关卡光照自然产生金属高光与明暗；`enhance_materials.py` 批量设置了金属度与粗糙度。
+
 ## 扩展
 
 - **换正式模型**：替换 `BuildKatanaModel / BuildTangDaoModel / BuildModel` 中的几何拼装为 StaticMesh 资产；tracer 用 `TracerMaterial` 指定自发光材质。

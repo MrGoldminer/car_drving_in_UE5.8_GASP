@@ -33,13 +33,23 @@ void UWeaponManagerComponent::BeginPlay()
 
 	Katana = GetWorld()->SpawnActor<AMeleeWeapon>(SpawnParams);
 	Katana->WeaponType = EWeaponType::Katana;
+	Katana->ModelAsset = FSoftObjectPath(TEXT("/Game/Weapons/Models/Katana/StaticMeshes/Katana.Katana"));
+	Katana->ModelScale = FVector(0.1376f);
+	Katana->ModelRotation = FRotator(90.0f, 0.0f, 0.0f);
 	Katana->RebuildModel();
 
 	TangDao = GetWorld()->SpawnActor<AMeleeWeapon>(SpawnParams);
 	TangDao->WeaponType = EWeaponType::TangDao;
+	TangDao->ModelAsset = FSoftObjectPath(TEXT("/Game/Weapons/Models/TangDao/StaticMeshes/TangDao.TangDao"));
+	TangDao->ModelScale = FVector(0.456f);
+	TangDao->ModelRotation = FRotator(90.0f, 0.0f, 0.0f);
 	TangDao->RebuildModel();
 
 	Rifle = GetWorld()->SpawnActor<ARifleWeapon>(SpawnParams);
+	Rifle->ModelAsset = FSoftObjectPath(TEXT("/Game/Weapons/Models/AK47/StaticMeshes/AK47.AK47"));
+	Rifle->ModelScale = FVector(0.633f);
+	Rifle->ModelRotation = FRotator::ZeroRotator;
+	Rifle->MuzzlePoint->SetRelativeLocation(FVector(25.0f, 0.0f, 0.0f));
 	Rifle->RebuildModel();
 }
 
