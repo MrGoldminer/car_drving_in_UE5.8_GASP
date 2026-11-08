@@ -8,11 +8,11 @@
 
 | 项 | 版本 |
 | --- | --- |
-| Unreal Engine | 5.7（本仓已适配；原始资产来自 5.8 示例） |
+| Unreal Engine | 5.8 |
 | Visual Studio | 2022/2026（MSVC 14.x） |
 | 平台 | Win64 |
 
-说明：UE 5.8 新增的 `AnimationLayering` 插件在 5.7 不存在，已从 `.uproject` 移除；`Target.cs` 使用 `BuildSettingsVersion.V6`。若迁回 5.8，可恢复该插件并改回 `V7`。
+说明：依赖 5.8 的 `AnimationLayering` 插件与 `BuildSettingsVersion.V7`。若使用 5.7 编译，需从 `.uproject` 移除该插件并将两个 `Target.cs` 降为 `V6`。
 
 ## 构建
 
