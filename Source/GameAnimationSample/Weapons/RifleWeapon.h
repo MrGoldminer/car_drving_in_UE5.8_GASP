@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rifle")
 	TObjectPtr<UMaterialInterface> TracerMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rifle|Animation")
+	TObjectPtr<UAnimMontage> FireMontage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> MuzzlePoint;
 

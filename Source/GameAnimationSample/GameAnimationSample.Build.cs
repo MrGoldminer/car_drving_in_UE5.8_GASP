@@ -19,7 +19,8 @@ public class GameAnimationSample : ModuleRules
 				"UMG",
 				"Slate",
 				"SlateCore",
-				"EnhancedInput"
+				"EnhancedInput",
+				"ProceduralMeshComponent"
 			});
 	}
 }

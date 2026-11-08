@@ -61,10 +61,10 @@ void UWeaponManagerComponent::TickComponent(
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!bInputBound && OwnerPawn && OwnerPawn->InputComponent)
+	if (OwnerPawn && OwnerPawn->InputComponent && BoundInputComponent.Get() != OwnerPawn->InputComponent)
 	{
 		BindInput(OwnerPawn->InputComponent);
-		bInputBound = true;
+		BoundInputComponent = OwnerPawn->InputComponent;
 	}
 }
 

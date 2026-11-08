@@ -47,7 +47,7 @@ private:
 
 	TWeakObjectPtr<UPrimitiveComponent> HookComponent;
 	FVector HookLocalPoint = FVector::ZeroVector;
-	bool bInputBound = false;
+	TWeakObjectPtr<UInputComponent> BoundInputComponent;
 
 	void UpdateRope();
 };

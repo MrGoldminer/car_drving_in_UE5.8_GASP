@@ -5,10 +5,22 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialInterface.h"
+#include "ProceduralMeshComponent.h"
 
 AMeleeWeapon::AMeleeWeapon()
 {
 	Damage = 35.0f;
+
+	TrailMesh = NewObject<UProceduralMeshComponent>(this, TEXT("BladeTrail"));
+	TrailMesh->RegisterComponent();
+	TrailMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	TrailMesh->SetCastShadow(false);
+	TrailMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Weapons/Materials/M_BladeTrail.M_BladeTrail"));
+	if (TrailMaterial)
+	{
+		TrailMesh->SetMaterial(0, TrailMaterial);
+	}
 }
 
 void AMeleeWeapon::BuildModel()
@@ -53,6 +65,7 @@ void AMeleeWeapon::StartAttack()
 	SwingTime = 0.0f;
 	CooldownRemaining = AttackCooldown;
 	HitVictims.Reset();
+	PlayActionMontage(AttackMontage);
 }
 
 void AMeleeWeapon::StopAttack()
@@ -87,6 +100,82 @@ void AMeleeWeapon::Tick(float DeltaSeconds)
 		bSwinging = false;
 		WeaponRoot->SetRelativeRotation(GripRotation);
 	}
+
+	UpdateTrail(DeltaSeconds);
+}
+
+void AMeleeWeapon::UpdateTrail(float DeltaSeconds)
+{
+	if (bSwinging && bEnableTrail)
+	{
+		const FTransform WorldTransform = WeaponRoot->GetComponentTransform();
+		FTrailPoint Point;
+		Point.Root = WorldTransform.TransformPosition(BladeRootOffset);
+		Point.Tip = WorldTransform.TransformPosition(BladeTipOffset);
+		TrailPoints.Insert(Point, 0);
+		if (TrailPoints.Num() > 14)
+		{
+			TrailPoints.SetNum(14);
+		}
+	}
+
+	for (int32 Index = TrailPoints.Num() - 1; Index >= 0; --Index)
+	{
+		TrailPoints[Index].Age += DeltaSeconds;
+		if (TrailPoints[Index].Age > 0.18f)
+		{
+			TrailPoints.RemoveAt(Index);
+		}
+	}
+
+	RebuildTrailMesh();
+}
+
+void AMeleeWeapon::RebuildTrailMesh()
+{
+	TrailMesh->ClearMeshSection(0);
+	if (TrailPoints.Num() < 2)
+	{
+		return;
+	}
+
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FLinearColor> Colors;
+	TArray<FProcMeshTangent> Tangents;
+
+	for (int32 Index = 0; Index < TrailPoints.Num() - 1; ++Index)
+	{
+		const FTrailPoint& Current = TrailPoints[Index];
+		const FTrailPoint& Next = TrailPoints[Index + 1];
+		const float Alpha = FMath::Clamp(1.0f - Current.Age / 0.18f, 0.0f, 1.0f);
+		const FLinearColor Color(0.55f, 0.8f, 1.0f, Alpha);
+
+		const int32 Base = Vertices.Num();
+		Vertices.Add(Current.Root);
+		Vertices.Add(Current.Tip);
+		Vertices.Add(Next.Root);
+		Vertices.Add(Next.Tip);
+
+		Triangles.Add(Base + 0);
+		Triangles.Add(Base + 1);
+		Triangles.Add(Base + 2);
+		Triangles.Add(Base + 1);
+		Triangles.Add(Base + 3);
+		Triangles.Add(Base + 2);
+
+		for (int32 Corner = 0; Corner < 4; ++Corner)
+		{
+			Normals.Add(FVector::UpVector);
+			UVs.Add(FVector2D::ZeroVector);
+			Colors.Add(Color);
+			Tangents.Add(FProcMeshTangent(FVector::ForwardVector, false));
+		}
+	}
+
+	TrailMesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, Normals, UVs, Colors, Tangents, false);
 }
 
 void AMeleeWeapon::PerformMeleeTrace()

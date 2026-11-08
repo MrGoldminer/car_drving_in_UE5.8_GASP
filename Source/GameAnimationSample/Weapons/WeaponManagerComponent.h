@@ -47,7 +47,7 @@ private:
 	TObjectPtr<ARifleWeapon> Rifle;
 
 	EWeaponType CurrentType = EWeaponType::None;
-	bool bInputBound = false;
+	TWeakObjectPtr<UInputComponent> BoundInputComponent;
 
 	void BindInput(UInputComponent* InputComponent);
 	void DisableNextPawnTabMapping();

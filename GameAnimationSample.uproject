@@ -97,6 +97,10 @@
 		{
 			"Name": "GameplayInteractions",
 			"Enabled": true
+		},
+		{
+			"Name": "ProceduralMeshComponent",
+			"Enabled": true
 		}
 	],
 	"EpicSampleNameHash": "1673045636"

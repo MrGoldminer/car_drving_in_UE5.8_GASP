@@ -310,4 +310,43 @@ bool FHealthDamageTest::RunTest(const FString& Parameters)
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FWeaponAfterVehicleTest,
+	"GameAnimationSample.Weapons.SwitchStillWorksAfterVehicle",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FWeaponAfterVehicleTest::RunTest(const FString& Parameters)
+{
+	UWorld* World = GameplayTestHelpers::CreateTestWorld();
+	if (!World)
+	{
+		AddError(TEXT("Failed to create test world"));
+		return false;
+	}
+
+	APlayerController* Controller = nullptr;
+	ACharacter* Character = GameplayTestHelpers::SpawnControlledCharacter(World, Controller);
+	UWeaponManagerComponent* Manager = NewObject<UWeaponManagerComponent>(Character, TEXT("TestWeaponManager"));
+	Manager->RegisterComponent();
+
+	Manager->EquipWeapon(EWeaponType::Katana);
+	TestEqual(TEXT("Katana equipped before vehicle"), Manager->GetCurrentWeaponType(), EWeaponType::Katana);
+
+	ABuggyPawn* Buggy = GameplayTestHelpers::SpawnBuggy(World, FVector(150.0f, 0.0f, 50.0f));
+	Buggy->EnterVehicle(Character);
+	Buggy->ExitVehicle();
+
+	Manager->CycleWeapon();
+	TestEqual(TEXT("Cycle to TangDao after exit"), Manager->GetCurrentWeaponType(), EWeaponType::TangDao);
+	TestNotNull(TEXT("TangDao exists after exit"), Manager->GetCurrentWeapon());
+	TestFalse(TEXT("TangDao visible after exit"), Manager->GetCurrentWeapon()->IsHidden());
+
+	Manager->CycleWeapon();
+	TestEqual(TEXT("Cycle to AK47 after exit"), Manager->GetCurrentWeaponType(), EWeaponType::AK47);
+	TestFalse(TEXT("AK47 visible after exit"), Manager->GetCurrentWeapon()->IsHidden());
+
+	GameplayTestHelpers::DestroyTestWorld(World);
+	return true;
+}
+
 #endif

@@ -21,5 +21,5 @@ public:
 	float InteractionDistance = 300.0f;
 
 private:
-	bool bInputBound = false;
+	TWeakObjectPtr<UInputComponent> BoundInputComponent;
 };

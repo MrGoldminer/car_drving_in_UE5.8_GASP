@@ -5,6 +5,7 @@
 #include "GameAnimationSample/Weapons/WeaponTypes.h"
 #include "WeaponBase.generated.h"
 
+class UAnimMontage;
 class UMaterialInterface;
 class USceneComponent;
 class UStaticMesh;
@@ -77,4 +78,5 @@ protected:
 	TArray<TObjectPtr<UStaticMeshComponent>> ModelParts;
 
 	void ApplyWeaponDamage(AActor* Victim);
+	void PlayActionMontage(UAnimMontage* Montage);
 };

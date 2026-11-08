@@ -130,6 +130,8 @@ void ARifleWeapon::FireOnce()
 
 	MuzzleFlash->SetVisibility(true);
 	MuzzleFlashRemaining = 0.04f;
+
+	PlayActionMontage(FireMontage);
 }
 
 void ARifleWeapon::SpawnTracer(const FVector& Start, const FVector& End)

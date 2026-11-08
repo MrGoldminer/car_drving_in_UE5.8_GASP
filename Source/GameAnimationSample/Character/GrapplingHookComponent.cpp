@@ -45,11 +45,11 @@ void UGrapplingHookComponent::TickComponent(
 		return;
 	}
 
-	if (!bInputBound && OwnerPawn->InputComponent)
+	if (OwnerPawn->InputComponent && BoundInputComponent.Get() != OwnerPawn->InputComponent)
 	{
 		OwnerPawn->InputComponent->BindAction(TEXT("Grapple"), IE_Pressed, this, &UGrapplingHookComponent::StartGrapple);
 		OwnerPawn->InputComponent->BindAction(TEXT("Grapple"), IE_Released, this, &UGrapplingHookComponent::ReleaseGrapple);
-		bInputBound = true;
+		BoundInputComponent = OwnerPawn->InputComponent;
 	}
 
 	if (!bIsGrappling)

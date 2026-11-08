@@ -1,6 +1,10 @@
 #include "GameAnimationSample/Weapons/WeaponBase.h"
 
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "Components/SceneComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/Character.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "GameFramework/Pawn.h"
@@ -124,4 +128,23 @@ void AWeaponBase::ApplyWeaponDamage(AActor* Victim)
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	AController* InstigatorController = OwnerPawn ? OwnerPawn->GetController() : nullptr;
 	UGameplayStatics::ApplyDamage(Victim, Damage, InstigatorController, this, UDamageType::StaticClass());
+}
+
+void AWeaponBase::PlayActionMontage(UAnimMontage* Montage)
+{
+	if (!Montage)
+	{
+		return;
+	}
+
+	if (ACharacter* Character = Cast<ACharacter>(GetOwner()))
+	{
+		if (USkeletalMeshComponent* Mesh = Character->GetMesh())
+		{
+			if (UAnimInstance* AnimInstance = Mesh->GetAnimInstance())
+			{
+				AnimInstance->Montage_Play(Montage);
+			}
+		}
+	}
 }

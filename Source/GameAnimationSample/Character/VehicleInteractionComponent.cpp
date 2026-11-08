@@ -17,14 +17,14 @@ void UVehicleInteractionComponent::TickComponent(
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!bInputBound && OwnerPawn && OwnerPawn->InputComponent)
+	if (OwnerPawn && OwnerPawn->InputComponent && BoundInputComponent.Get() != OwnerPawn->InputComponent)
 	{
 		OwnerPawn->InputComponent->BindAction(
 			TEXT("VehicleInteract"),
 			IE_Pressed,
 			this,
 			&UVehicleInteractionComponent::TryEnterVehicle);
-		bInputBound = true;
+		BoundInputComponent = OwnerPawn->InputComponent;
 	}
 }
 
