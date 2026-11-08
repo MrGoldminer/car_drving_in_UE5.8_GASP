@@ -89,7 +89,7 @@ ABuggyPawn::ABuggyPawn()
 	{
 		SplashMesh->SetStaticMesh(SphereAsset.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> SplashMaterial(TEXT("/Game/Vehicles/Effects/M_WaterDroplet.M_WaterDroplet"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> SplashMaterial(TEXT("/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial"));
 	if (SplashMaterial.Succeeded())
 	{
 		SplashMesh->SetMaterial(0, SplashMaterial.Object);

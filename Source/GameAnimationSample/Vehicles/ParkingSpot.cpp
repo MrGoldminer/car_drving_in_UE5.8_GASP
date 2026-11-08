@@ -21,7 +21,7 @@ AParkingSpot::AParkingSpot()
 	{
 		Marker->SetStaticMesh(CubeAsset.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MarkerMaterial(TEXT("/Game/Vehicles/Effects/M_ParkingSpot.M_ParkingSpot"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MarkerMaterial(TEXT("/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial"));
 	if (MarkerMaterial.Succeeded())
 	{
 		Marker->SetMaterial(0, MarkerMaterial.Object);
