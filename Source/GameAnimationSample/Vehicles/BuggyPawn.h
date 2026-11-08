@@ -57,9 +57,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Buggy|Effects")
 	bool bEnableWaterSplash = true;
 
-protected:
-	virtual void UpdateWheelVisual(int32 WheelIndex) override;
-
 private:
 	struct FDroplet
 	{
@@ -70,21 +67,16 @@ private:
 	};
 
 	UPROPERTY()
-	TArray<TObjectPtr<UStaticMeshComponent>> ModelParts;
-
-	UPROPERTY()
 	TObjectPtr<APawn> DriverPawn;
 
 	UPROPERTY()
 	TObjectPtr<AController> DriverController;
 
-	FVector WheelSourceCenters[NumWheels] = {};
 	TArray<FDroplet> Droplets;
 	bool bDriverTickEnabled = true;
 	bool bDriverCollisionEnabled = true;
 	TWeakObjectPtr<AParkingSpot> AutoParkTarget;
 
-	static FVector MapModelPoint(const FVector& Point);
 	void UpdateSplashes(float DeltaSeconds);
 	void UpdateAutoPark();
 	void ExitVehicleInput() { ExitVehicle(); }

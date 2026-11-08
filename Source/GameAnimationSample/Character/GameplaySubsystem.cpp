@@ -1,11 +1,12 @@
-#include "GameAnimationSample/Character/VehicleGameplaySubsystem.h"
+#include "GameAnimationSample/Character/GameplaySubsystem.h"
 
 #include "GameAnimationSample/Character/GrapplingHookComponent.h"
 #include "GameAnimationSample/Character/VehicleInteractionComponent.h"
 #include "GameAnimationSample/Vehicles/BumperCarPawn.h"
+#include "GameAnimationSample/Weapons/WeaponManagerComponent.h"
 #include "GameFramework/PlayerController.h"
 
-void UVehicleGameplaySubsystem::Tick(float DeltaTime)
+void UGameplaySubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TimeUntilNextCheck -= DeltaTime;
@@ -39,6 +40,11 @@ void UVehicleGameplaySubsystem::Tick(float DeltaTime)
 		{
 			UVehicleInteractionComponent* Interaction = NewObject<UVehicleInteractionComponent>(Pawn, TEXT("VehicleInteraction"));
 			Interaction->RegisterComponent();
+		}
+		if (!Pawn->FindComponentByClass<UWeaponManagerComponent>())
+		{
+			UWeaponManagerComponent* Weapons = NewObject<UWeaponManagerComponent>(Pawn, TEXT("WeaponManager"));
+			Weapons->RegisterComponent();
 		}
 	}
 }

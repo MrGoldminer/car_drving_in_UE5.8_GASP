@@ -14,13 +14,6 @@
 #include "MoverExamplesCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
-namespace BuggyModel
-{
-	constexpr float Scale = 0.2f;
-	const FVector Center(34.0795f, 23.735f, 0.0f);
-	const FRotator Rotation(0.0f, -90.0f, 0.0f);
-}
-
 ABuggyPawn::ABuggyPawn()
 {
 	VehicleMass = 350.0f;
@@ -34,82 +27,47 @@ ABuggyPawn::ABuggyPawn()
 	SpringStiffness = 15000.0f;
 	SpringDamping = 2500.0f;
 	MaxSuspensionForce = 200000.0f;
-	WheelRadius = 24.0f;
-	WheelWidth = 12.5f;
-	WheelBase = 116.0f;
-	TrackWidth = 102.0f;
+	WheelRadius = 28.0f;
+	WheelWidth = 16.0f;
+	WheelBase = 170.0f;
+	TrackWidth = 190.0f;
 	BodyCollision->InitBoxExtent(FVector(105.0f, 65.0f, 35.0f));
 	BumperMaterial->Restitution = 0.25f;
 	CameraBoom->TargetArmLength = 350.0f;
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 60.0f));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BodyAsset(TEXT("/Game/Vehicles/Buggy/Car_body.Car_body"));
-	if (BodyAsset.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeAsset(TEXT("/Engine/BasicShapes/Cube.Cube"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CylinderAsset(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> GrayMaterial(TEXT("/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial"));
+	if (CubeAsset.Succeeded())
 	{
-		BodyMesh->SetStaticMesh(BodyAsset.Object);
+		BodyMesh->SetStaticMesh(CubeAsset.Object);
+		SeatMesh->SetStaticMesh(CubeAsset.Object);
 	}
-	BodyMesh->SetRelativeLocation(MapModelPoint(FVector(33.738235f, -27.596130f, 242.515530f)));
-	BodyMesh->SetRelativeRotation(BuggyModel::Rotation);
-	BodyMesh->SetRelativeScale3D(FVector(BuggyModel::Scale));
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SeatAsset(TEXT("/Game/Vehicles/Buggy/kart_body_2.kart_body_2"));
-	if (SeatAsset.Succeeded())
+	if (GrayMaterial.Succeeded())
 	{
-		SeatMesh->SetStaticMesh(SeatAsset.Object);
+		BodyMesh->SetMaterial(0, GrayMaterial.Object);
+		SeatMesh->SetMaterial(0, GrayMaterial.Object);
 	}
-	SeatMesh->SetRelativeLocation(MapModelPoint(FVector(34.079472f, 97.540482f, 193.376324f)));
-	SeatMesh->SetRelativeRotation(BuggyModel::Rotation);
-	SeatMesh->SetRelativeScale3D(FVector(BuggyModel::Scale));
+	BodyMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
+	BodyMesh->SetRelativeRotation(FRotator::ZeroRotator);
+	BodyMesh->SetRelativeScale3D(FVector(2.5f, 1.8f, 0.5f));
+	SeatMesh->SetRelativeLocation(FVector(-30.0f, 0.0f, 55.0f));
+	SeatMesh->SetRelativeRotation(FRotator::ZeroRotator);
+	SeatMesh->SetRelativeScale3D(FVector(0.65f, 0.75f, 0.5f));
+	SeatMesh->SetVisibility(true);
 
-	struct FPartDefinition
-	{
-		FName ComponentName;
-		const TCHAR* AssetName;
-		FVector Center;
-	};
-	const FPartDefinition PartDefinitions[] = {
-		{TEXT("FrontBumper"), TEXT("front_low"), FVector(37.211117f, 337.281235f, 121.505394f)},
-		{TEXT("Grille"), TEXT("grid_low"), FVector(36.377594f, 357.986984f, 90.892101f)},
-		{TEXT("LeftHandle"), TEXT("handle_1"), FVector(192.550125f, 314.487839f, 106.811350f)},
-		{TEXT("RightHandle"), TEXT("handle_2"), FVector(-117.019840f, 313.954529f, 108.631657f)},
-		{TEXT("LeftRearHandle"), TEXT("handle_3"), FVector(232.595459f, -261.246857f, 127.199223f)},
-		{TEXT("RightRearHandle"), TEXT("handle_4"), FVector(-164.038666f, -261.492882f, 128.326355f)},
-		{TEXT("RollCage"), TEXT("pipes_1_low"), FVector(34.079552f, -130.285851f, 242.194641f)},
-		{TEXT("HeadLamp"), TEXT("lamp_low"), FVector(32.631426f, 292.087097f, 242.249413f)},
-		{TEXT("SteeringWheel"), TEXT("controlWheel"), FVector(34.079493f, 115.875759f, 313.527473f)},
-		{TEXT("NumberDecal"), TEXT("Decal1"), FVector(32.531921f, 343.917603f, 157.976589f)},
-	};
-
-	for (const FPartDefinition& Definition : PartDefinitions)
-	{
-		UStaticMeshComponent* Part = CreateDefaultSubobject<UStaticMeshComponent>(Definition.ComponentName);
-		Part->SetupAttachment(BodyCollision);
-		Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Part->SetRelativeLocation(MapModelPoint(Definition.Center));
-		Part->SetRelativeRotation(BuggyModel::Rotation);
-		Part->SetRelativeScale3D(FVector(BuggyModel::Scale));
-		const FString AssetPath = FString::Printf(TEXT("/Game/Vehicles/Buggy/%s.%s"), Definition.AssetName, Definition.AssetName);
-		ConstructorHelpers::FObjectFinder<UStaticMesh> PartAsset(*AssetPath);
-		if (PartAsset.Succeeded())
-		{
-			Part->SetStaticMesh(PartAsset.Object);
-		}
-		ModelParts.Add(Part);
-	}
-
-	const TCHAR* WheelAssets[NumWheels] = {TEXT("Tire_2"), TEXT("Tire_4"), TEXT("Tire_1"), TEXT("Tire_3")};
-	WheelSourceCenters[0] = FVector(277.008369f, 311.951935f, 104.989418f);
-	WheelSourceCenters[1] = FVector(-207.017090f, 315.996796f, 104.990668f);
-	WheelSourceCenters[2] = FVector(292.777878f, -264.480659f, 104.989724f);
-	WheelSourceCenters[3] = FVector(-232.486755f, -267.097595f, 104.989939f);
 	for (int32 Index = 0; Index < NumWheels; ++Index)
 	{
-		const FString AssetPath = FString::Printf(TEXT("/Game/Vehicles/Buggy/%s.%s"), WheelAssets[Index], WheelAssets[Index]);
-		ConstructorHelpers::FObjectFinder<UStaticMesh> WheelAsset(*AssetPath);
-		if (WheelAsset.Succeeded())
+		if (CylinderAsset.Succeeded())
 		{
-			WheelMeshes[Index]->SetStaticMesh(WheelAsset.Object);
+			WheelMeshes[Index]->SetStaticMesh(CylinderAsset.Object);
 		}
+		if (GrayMaterial.Succeeded())
+		{
+			WheelMeshes[Index]->SetMaterial(0, GrayMaterial.Object);
+		}
+		WheelMeshes[Index]->SetVisibility(true);
 	}
 
 	SeatPoint = CreateDefaultSubobject<USceneComponent>(TEXT("SeatPoint"));
@@ -141,34 +99,6 @@ ABuggyPawn::ABuggyPawn()
 	{
 		DriverAnimation = SittingAnimation.Object;
 	}
-}
-
-FVector ABuggyPawn::MapModelPoint(const FVector& Point)
-{
-	const FVector Relative = Point - BuggyModel::Center;
-	return FVector(
-		Relative.Y * BuggyModel::Scale,
-		-Relative.X * BuggyModel::Scale,
-		Point.Z * BuggyModel::Scale - 21.0f);
-}
-
-void ABuggyPawn::UpdateWheelVisual(int32 WheelIndex)
-{
-	if (!WheelMeshes[WheelIndex])
-	{
-		return;
-	}
-
-	const FBumperCarWheelState& Wheel = WheelStates[WheelIndex];
-	const FVector WheelCenter = MapModelPoint(WheelSourceCenters[WheelIndex]);
-	const FVector TargetCenter = GetWheelAnchorLocal(WheelIndex) - FVector(0.0f, 0.0f, Wheel.SuspensionLength);
-	WheelMeshes[WheelIndex]->SetRelativeLocation(TargetCenter - WheelCenter);
-	WheelMeshes[WheelIndex]->SetRelativeScale3D(FVector(BuggyModel::Scale));
-
-	const FQuat SteeringRotation(FVector::UpVector, FMath::DegreesToRadians(Wheel.SteeringAngle));
-	const FQuat RollingRotation(FVector::RightVector, FMath::DegreesToRadians(Wheel.SpinAngle));
-	const FQuat ModelRotation(BuggyModel::Rotation);
-	WheelMeshes[WheelIndex]->SetRelativeRotation((SteeringRotation * RollingRotation * ModelRotation).Rotator());
 }
 
 void ABuggyPawn::Tick(float DeltaSeconds)

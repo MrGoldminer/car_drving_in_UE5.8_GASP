@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.8",
+	"EngineAssociation": "5.7",
 	"Category": "Samples",
 	"Description": "",
 	"Modules": [
@@ -64,10 +64,6 @@
 		},
 		{
 			"Name": "ChaosMover",
-			"Enabled": true
-		},
-		{
-			"Name": "AnimationLayering",
 			"Enabled": true
 		},
 		{

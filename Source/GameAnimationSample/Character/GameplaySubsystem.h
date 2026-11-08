@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "VehicleGameplaySubsystem.generated.h"
+#include "GameplaySubsystem.generated.h"
 
 UCLASS()
-class GAMEANIMATIONSAMPLE_API UVehicleGameplaySubsystem : public UTickableWorldSubsystem
+class GAMEANIMATIONSAMPLE_API UGameplaySubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 
