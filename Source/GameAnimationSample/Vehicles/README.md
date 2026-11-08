@@ -22,7 +22,7 @@
 | `VehicleInteract` | F | 视角对准载具进入；驾驶中离开 |
 | `BumperCar_AutoPark` | P | 自动泊车开关 |
 
-交互由 `Character/VehicleInteractionComponent`（相机射线检测）触发；人物上车后输入移转载具。
+交互由 `Character/VehicleInteractionComponent` 就近检测（`InteractionDistance=300cm` 内最近的无主 Buggy）触发；人物上车后输入移转载具，驾驶中按 F 下车切回人物。
 
 ## 模型
 

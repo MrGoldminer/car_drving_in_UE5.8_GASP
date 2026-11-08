@@ -1,8 +1,8 @@
 #include "GameAnimationSample/Character/VehicleInteractionComponent.h"
 
 #include "Components/InputComponent.h"
+#include "EngineUtils.h"
 #include "GameAnimationSample/Vehicles/BuggyPawn.h"
-#include "GameFramework/PlayerController.h"
 
 UVehicleInteractionComponent::UVehicleInteractionComponent()
 {
@@ -36,23 +36,26 @@ void UVehicleInteractionComponent::TryEnterVehicle()
 		return;
 	}
 
-	APlayerController* Controller = Cast<APlayerController>(OwnerPawn->GetController());
-	if (!Controller || !Controller->PlayerCameraManager)
+	ABuggyPawn* ClosestVehicle = nullptr;
+	float ClosestDistanceSq = FMath::Square(InteractionDistance);
+	for (TActorIterator<ABuggyPawn> Iterator(GetWorld()); Iterator; ++Iterator)
 	{
-		return;
+		ABuggyPawn* Vehicle = *Iterator;
+		if (Vehicle->HasDriver())
+		{
+			continue;
+		}
+
+		const float DistanceSq = FVector::DistSquared(OwnerPawn->GetActorLocation(), Vehicle->GetActorLocation());
+		if (DistanceSq <= ClosestDistanceSq)
+		{
+			ClosestDistanceSq = DistanceSq;
+			ClosestVehicle = Vehicle;
+		}
 	}
 
-	const FVector TraceStart = Controller->PlayerCameraManager->GetCameraLocation();
-	const FVector TraceEnd = TraceStart + Controller->PlayerCameraManager->GetCameraRotation().Vector() * InteractionDistance;
-	FCollisionQueryParams QueryParams(SCENE_QUERY_STAT(VehicleInteraction), false, OwnerPawn);
-	FHitResult Hit;
-	if (!GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	if (ClosestVehicle)
 	{
-		return;
-	}
-
-	if (ABuggyPawn* Vehicle = Cast<ABuggyPawn>(Hit.GetActor()))
-	{
-		Vehicle->EnterVehicle(OwnerPawn);
+		ClosestVehicle->EnterVehicle(OwnerPawn);
 	}
 }

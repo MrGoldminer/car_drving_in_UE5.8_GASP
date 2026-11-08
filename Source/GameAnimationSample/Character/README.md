@@ -8,7 +8,7 @@
 | --- | --- |
 | `UGameplaySubsystem` | 框架接入层（WorldSubsystem）：每 0.5s 扫描玩家 Pawn，动态注册抓钩、载具交互、武器管理组件；载具 Pawn 跳过 |
 | `UGrapplingHookComponent` | 抓钩：相机射线找钩点，样条网格绳索表现，按住拉拽（`PullSpeed/PullResponsiveness` 可调），松开释放 |
-| `UVehicleInteractionComponent` | 载具交互：相机射线检测 Buggy，触发上下车 |
+| `UVehicleInteractionComponent` | 载具交互：按 F 时查找 300cm 内最近的无主 Buggy 上车；驾驶中再按 F 下车切回人物 |
 
 ## 输入（Config/DefaultInput.ini）
 
