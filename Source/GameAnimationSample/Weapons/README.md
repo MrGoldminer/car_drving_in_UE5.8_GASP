@@ -9,7 +9,7 @@
 | `EWeaponType` | `None / Katana / TangDao / AK47` |
 | `AWeaponBase` | 武器基类：零件拼装（`AddBoxPart/AddCylinderPart`）、可见性、伤害应用（`ApplyWeaponDamage`）、握持偏移（`GripLocation/GripRotation`） |
 | `AMeleeWeapon` | 太刀 / 唐刀。`StartAttack` 触发挥砍：Tick 驱动武器挥动，激活窗口内做球形 Sweep，命中 Pawn 施加伤害；单次挥砍内同一目标只命中一次 |
-| `ARifleWeapon` | AK47。按住攻击全自动射击（600 RPM）；相机射线判定命中，枪口到命中点生成弹道轨迹（tracer），附枪口火光 |
+| `ARifleWeapon` | AK47。按住攻击全自动射击（600 RPM）；相机射线判定命中（`ECC_Pawn` 多命中通道，兼容人物 capsule 的 Overlap 响应与墙体阻挡；不能用 `ECC_Visibility`，人物 capsule 默认忽略该通道），枪口到命中点生成弹道轨迹（tracer），附枪口火光 |
 | `UWeaponManagerComponent` | 挂在人物上的武器库：BeginPlay 生成三把武器，`EquipWeapon` 挂到 `hand_r` socket，`CycleWeapon` 循环切换 |
 
 ## 输入（Config/DefaultInput.ini）

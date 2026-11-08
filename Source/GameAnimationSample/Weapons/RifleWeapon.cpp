@@ -103,13 +103,27 @@ void ARifleWeapon::FireOnce()
 	FCollisionQueryParams QueryParams(SCENE_QUERY_STAT(RifleWeapon), false, OwnerPawn);
 	QueryParams.AddIgnoredActor(this);
 
-	FHitResult Hit;
-	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams);
-	const FVector ImpactPoint = Hit.bBlockingHit ? Hit.ImpactPoint : TraceEnd;
+	TArray<FHitResult> Hits;
+	GetWorld()->LineTraceMultiByChannel(Hits, TraceStart, TraceEnd, ECC_Pawn, QueryParams);
 
-	if (Hit.bBlockingHit && Hit.GetActor() && Hit.GetActor() != OwnerPawn)
+	FHitResult BestHit;
+	bool bHasHit = false;
+	for (const FHitResult& Hit : Hits)
 	{
-		ApplyWeaponDamage(Hit.GetActor());
+		AActor* HitActor = Hit.GetActor();
+		if (!HitActor || HitActor == OwnerPawn || HitActor == this)
+		{
+			continue;
+		}
+		BestHit = Hit;
+		bHasHit = true;
+		break;
+	}
+
+	const FVector ImpactPoint = bHasHit ? BestHit.ImpactPoint : TraceEnd;
+	if (bHasHit)
+	{
+		ApplyWeaponDamage(BestHit.GetActor());
 	}
 
 	SpawnTracer(MuzzlePoint->GetComponentLocation(), ImpactPoint);
