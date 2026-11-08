@@ -2,8 +2,10 @@ Binaries/
 Intermediate/
 Saved/
 DerivedDataCache/
-RawAssets/
-Content/
+RawAssets/*
+!RawAssets/Weapons/
+Content/*
+!Content/Weapons/
 .vs/
 .vscode/
 .idea/
