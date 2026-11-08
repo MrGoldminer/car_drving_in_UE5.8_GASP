@@ -6,7 +6,7 @@
 
 | 类 | 职责 |
 | --- | --- |
-| `UGameplaySubsystem` | 框架接入层（WorldSubsystem）：每 0.5s 扫描玩家 Pawn，动态注册抓钩、载具交互、武器管理组件；载具 Pawn 跳过 |
+| `UGameplaySubsystem` | 框架接入层（WorldSubsystem）：每 0.5s 扫描玩家 Pawn，动态注册抓钩、载具交互、武器管理组件；载具 Pawn 跳过。开局若玩家直接控制着无司机的 Buggy（如关卡里设置了 Auto Possess），自动切回场景人物（必要时生成） |
 | `UGrapplingHookComponent` | 抓钩：相机射线找钩点，样条网格绳索表现，按住拉拽（`PullSpeed/PullResponsiveness` 可调），松开释放 |
 | `UVehicleInteractionComponent` | 载具交互：按 F 时查找 300cm 内最近的无主 Buggy 上车；驾驶中再按 F 下车切回人物 |
 

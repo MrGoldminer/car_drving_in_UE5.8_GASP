@@ -16,4 +16,6 @@ public:
 
 private:
 	float TimeUntilNextCheck = 0.0f;
+
+	void ReturnControlToCharacter(APlayerController* Controller, class ABuggyPawn* Buggy);
 };

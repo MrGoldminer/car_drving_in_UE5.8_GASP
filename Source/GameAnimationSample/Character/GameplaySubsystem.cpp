@@ -1,9 +1,13 @@
 #include "GameAnimationSample/Character/GameplaySubsystem.h"
 
+#include "EngineUtils.h"
 #include "GameAnimationSample/Character/GrapplingHookComponent.h"
 #include "GameAnimationSample/Character/VehicleInteractionComponent.h"
+#include "GameAnimationSample/Vehicles/BuggyPawn.h"
 #include "GameAnimationSample/Vehicles/BumperCarPawn.h"
 #include "GameAnimationSample/Weapons/WeaponManagerComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 
 void UGameplaySubsystem::Tick(float DeltaTime)
@@ -26,7 +30,20 @@ void UGameplaySubsystem::Tick(float DeltaTime)
 	{
 		APlayerController* Controller = Iterator->Get();
 		APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
-		if (!Pawn || Pawn->IsA<ABumperCarPawn>())
+		if (!Pawn)
+		{
+			continue;
+		}
+
+		if (ABuggyPawn* Buggy = Cast<ABuggyPawn>(Pawn))
+		{
+			if (!Buggy->HasDriver())
+			{
+				ReturnControlToCharacter(Controller, Buggy);
+			}
+			continue;
+		}
+		if (Pawn->IsA<ABumperCarPawn>())
 		{
 			continue;
 		}
@@ -46,5 +63,48 @@ void UGameplaySubsystem::Tick(float DeltaTime)
 			UWeaponManagerComponent* Weapons = NewObject<UWeaponManagerComponent>(Pawn, TEXT("WeaponManager"));
 			Weapons->RegisterComponent();
 		}
+	}
+}
+
+void UGameplaySubsystem::ReturnControlToCharacter(APlayerController* Controller, ABuggyPawn* Buggy)
+{
+	UWorld* World = GetWorld();
+	APawn* CharacterPawn = nullptr;
+	for (TActorIterator<ACharacter> Iterator(World); Iterator; ++Iterator)
+	{
+		APawn* Candidate = *Iterator;
+		if (Candidate != Buggy && !Candidate->IsA<ABumperCarPawn>())
+		{
+			CharacterPawn = Candidate;
+			break;
+		}
+	}
+
+	if (!CharacterPawn)
+	{
+		UClass* PawnClass = nullptr;
+		if (AGameModeBase* GameMode = World->GetAuthGameMode())
+		{
+			if (GameMode->DefaultPawnClass && !GameMode->DefaultPawnClass->IsChildOf(ABumperCarPawn::StaticClass()))
+			{
+				PawnClass = GameMode->DefaultPawnClass;
+			}
+		}
+		if (!PawnClass)
+		{
+			PawnClass = LoadClass<APawn>(nullptr, TEXT("/Game/Blueprints/SandboxCharacter_Mover.SandboxCharacter_Mover_C"));
+		}
+		if (PawnClass)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			const FVector Location = Buggy->GetActorLocation() + Buggy->GetActorRightVector() * 250.0f + FVector(0.0f, 0.0f, 100.0f);
+			CharacterPawn = World->SpawnActor<APawn>(PawnClass, Location, FRotator::ZeroRotator, SpawnParams);
+		}
+	}
+
+	if (CharacterPawn)
+	{
+		Controller->Possess(CharacterPawn);
 	}
 }

@@ -16,6 +16,8 @@
 
 ABuggyPawn::ABuggyPawn()
 {
+	AutoPossessPlayer = EAutoReceiveInput::Disabled;
+
 	VehicleMass = 350.0f;
 	EngineForce = 180000.0f;
 	BrakeForce = 300000.0f;
